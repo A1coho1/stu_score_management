@@ -1,0 +1,194 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block title %}
+课程统计分析
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+
+    <div style="margin-bottom: 10px" class="clearfix">
+        <div style="float: right;width: 300px; margin: 5px">
+            <form method="get" , id="query">
+                <div class="input-group">
+                    <input type="text" name="course" class="form-control" placeholder="按课程名/课程号(精确)查询" id="input" value="{{search_data}}">
+                    <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            {{name}} 课程统计
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered">
+            <thead>
+            <tr class="warning">
+                <th>学号</th>
+                <th>姓名</th>
+                <th>专业</th>
+                <th>学院</th>
+                <th>成绩</th>
+                <th>日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.gid}}</th>
+                <th>{{ obj.s_name}}</th>
+                <th>{{ obj.major}}</th>
+                <th>{{ obj.college}}</th>
+                <td style="font-weight : bold">{{ obj.score}}</td>
+                <td style="font-weight : bold">{{ obj.date}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default" style="margin-top: 50px">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                    {{name}} 课程分段成绩统计
+                </div>
+
+
+                <table class="table table-bordered" style="width:100%;height: 430px">
+                    <thead>
+                    <tr>
+                        <th>成绩等级</th>
+                        <th>人数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <th class="text-success">优秀(90以上)</th>
+                        <th>{{ grade_set.perfect }}</th>
+                    </tr>
+
+                    <tr>
+                        <th class="text-primary">良好(80-89)</th>
+                        <th>{{ grade_set.great }}</th>
+                    </tr>
+
+                    <tr>
+                        <th class="text-info">中等(70-79)</th>
+                        <th>{{ grade_set.good }}</th>
+                    </tr>
+
+                    <tr>
+                        <th class="text-warning">及格(60-69)</th>
+                        <th>{{ grade_set.qualified }}</th>
+                    </tr>
+
+                    <tr>
+                        <th class="text-danger">不及格(60以下)</th>
+                        <th>{{ grade_set.not_qualified }}</th>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="panel panel-default" style="margin-top: 50px">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                    {{name}} 课程分段成绩统计饼图
+                </div>
+                <div class="panel-body">
+                    <div id="m3" style="width: 100%;height: 400px"></div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/echarts.min.js' %}"></script>
+<script type="text/javascript">
+
+    $(function () {
+        initPie();
+    })
+
+
+    //初始化饼状图
+    function initPie() {
+            var myChart = echarts.init(document.getElementById('m3'));
+            var option = {
+                title: {
+                    text: '成绩分段统计',
+                    subtext: 'Fake Data',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: '人数',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [
+                            {value: 735, name: '良好'},
+                            {value: 1048, name: '优秀'},
+                            {value: 300, name: '及格'},
+                            {value: 580, name: '不及格'},
+                            {value: 484, name: '中等'}
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+        // $("#btn").click(function () {
+            $.ajax({
+                url: "/statistic/pie/",
+                type: "get",
+                data: $("#query").serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    console.log(res);
+                    if (res.status) {
+                        option.series[0].data = res.data;
+                        option.title.subtext = res.cname;
+                        myChart.setOption(option);
+                    }
+                }
+            })
+        // })
+    }
+
+
+</script>
+{% endblock js%}

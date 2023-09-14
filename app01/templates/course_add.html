@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    添加课程信息
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"> 添加课程信息 </h3>
+        </div>
+        <div class="panel-body">
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="form-group">
+                    <label>{{field.label}}</label>
+                    {{field}}
+                    <span style="color: red;">{{field.errors.0}}</span>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">提 交</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    课程列表
+{% endblock title %}
+
+{% block content %}
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">添加课程信息</h4>
+            </div>
+            <div class="modal-body">
+
+                <form id="formAdd">
+                    <div class="clearfix">
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label>{{field.label}}</label>
+                                {{field}}
+                                <span class="error-msg" style="color: red;"></span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  id="btnBack" class="btn btn-default" data-dismiss="modal">返 回</button>
+                <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="container">
+        <div style="margin-bottom: 20px">
+            <a>
+                <input type="button" value="添加课程" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            </a>
+
+            <div style="float: right;width: 300px; margin: 5px">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="name" class="form-control" placeholder="按课程名称查询">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+
+        </div>
+
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                课程列表
+            </div>
+
+            <!-- Table -->
+            <table class="table table-hover">
+                <thead>
+                <tr class="warning">
+                    <th>课程号</th>
+                    <th>课程名称</th>
+                    <th>学分</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                <tr>
+                    <th>{{ obj.number}}</th>
+                    <td>{{ obj.name}}</td>
+                    <td>{{ obj.credit}}</td>
+                    <td>
+                        <a class="btn btn-success btn-xs" href="/course/{{ obj.id }}/edit">
+                            编辑
+                        </a>
+                        <a class="btn btn-danger btn-xs" href="/course/{{ obj.id }}/delete">
+                            删除
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+    $(function(){
+        bindBtnSaveEvent();
+        bindBtnBack();
+    })
+
+    //ajax提交表单
+    function bindBtnSaveEvent(){
+        $("#btnSave").click(function(){
+
+            $(".error-msg").empty();
+
+            $.ajax({
+                url:"/course/add",
+                type:"post",
+                data:$("#formAdd").serialize(),
+                dataType:"JSON",
+                success:function(res){
+                    if(res.status){
+
+                        // alert("添加成功")
+
+                        //清空表单
+                        $("#formAdd")[0].reset();
+
+                        //关闭对话框
+                        $('#myModal').modal('hide');
+
+                        //刷新页面
+                        location.reload();
+                    }
+                    else{
+                        //显示错误信息
+                        $.each(res.error, function(name, errorList){
+                            $("#id_"+name).next().text(errorList[0])
+                        })
+                    }
+                }
+            })                                  
+
+        })
+
+    }
+
+    //返回并刷新页面
+    function bindBtnBack(){
+        $("#btnBack").click(function(){
+            location.reload(bForceGet=true);
+        })
+    }
+
+</script>
+{% endblock js %}

@@ -1,0 +1,242 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+学生列表
+{% endblock title %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-datepicker-1.9.0/css/bootstrap-datepicker.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">添加学生信息</h4>
+            </div>
+            <div class="modal-body">
+
+                <form id="formAdd">
+                    <div class="clearfix">
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label>{{field.label}}</label>
+                                {{field}}
+                                <span class="error-msg" style="color: red;"></span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  id="btnBack" class="btn btn-default" data-dismiss="modal">返 回</button>
+                <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div style="margin-bottom: 20px">
+        <a>
+            <input type="button" value="添加学生" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+        </a>
+
+        <div style="float: right;width: 400px; margin: 5px">
+            <form method="get">
+                <div class="input-group">
+                    <div class="input-group-btn">
+
+                        <button type="button" id="Btnmsg" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选择查询类别<span class='caret'></span></button>
+
+                        <ul class="dropdown-menu">
+                          <li><a id="selected_name">姓名</a></li>
+                          <li><a id="selected_major">专业</a></li>
+                          <li><a id="selected_college">学院</a></li>
+                        </ul>
+                    </div>
+
+                    <input type="text" name="" class="form-control" id="ipt" placeholder="请选择查询类别">
+
+
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+        <!-- <div style="float: right;width: 300px; margin: 5px">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="major" class="form-control" placeholder="按专业查询">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+
+
+        <div style="float: right;width: 300px; margin: 5px">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="college" class="form-control" placeholder="按学院查询">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div> -->
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            学生列表
+        </div>
+
+        <!-- Table -->
+        <table class="table table-hover">
+            <thead>
+            <tr class="warning">
+                <th>学号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>出生日期</th>
+                <th>专业</th>
+                <th>学院</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.sid}}</th>
+                <td>{{ obj.name}}</td>
+                <td>{{ obj.get_gender_display}}</td>
+                <td>{{ obj.birth|date:"Y-m-d"}}</td>
+                <td>{{ obj.major}}</td>
+                <td>{{ obj.college}}</td>
+                <td>
+                    <a class="btn btn-success btn-xs" href="/student/{{ obj.id }}/edit">
+                        编辑
+                    </a>
+                    <a class="btn btn-danger btn-xs" href="/student/{{ obj.id }}/delete">
+                        删除
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugins/bootstrap-datepicker-1.9.0/js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datepicker-1.9.0/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+    <script>
+        $(function (){
+            $('#id_birth').datepicker({
+                format : 'yyyy-mm-dd',
+                startDate : '1950-01-01',
+                defaultDate: '2000-01-01' ,
+                language : 'zh-CN',
+                autoclose : true
+            });
+        })
+    </script>
+<script type="text/javascript">
+     $(function(){
+        F_name();
+        F_major();
+        F_college();
+        bindBtnSaveEvent();
+    })
+
+    function F_name()
+    {
+        $("#selected_name").click(function(){
+            $("#ipt").attr({'placeholder':"按姓名查询", "name":"name"});
+            $("#Btnmsg").text('姓名');
+            $("<span class='caret'></span>").appendTo($("#Btnmsg"));
+        })
+    }
+
+
+    function F_major()
+    {
+        $("#selected_major").click(function(){
+            $("#ipt").attr({'placeholder':"按专业查询", "name":"major"});
+            $("#Btnmsg").text('专业');
+            $("<span class='caret'></span>").appendTo($("#Btnmsg"));
+        })
+    }
+
+    function F_college()
+    {
+        $("#selected_college").click(function(){
+            $("#ipt").attr({'placeholder':"按学院查询", "name":"college"});
+            $("#Btnmsg").text('学院');
+            $("<span class='caret'></span>").appendTo($("#Btnmsg"));
+        })
+    }
+
+    //ajax提交表单
+    function bindBtnSaveEvent(){
+        $("#btnSave").click(function(){
+
+            $(".error-msg").empty();
+
+            $.ajax({
+                url:"/student/add",
+                type:"post",
+                data:$("#formAdd").serialize(),
+                dataType:"JSON",
+                success:function(res){
+                    if(res.status){
+
+                        // alert("添加成功")
+
+                        //清空表单
+                        $("#formAdd")[0].reset();
+
+                        //关闭对话框
+                        $('#myModal').modal('hide');
+
+                        //刷新页面
+                        location.reload();
+                    }
+                    else{
+                        //显示错误信息
+                        $.each(res.error, function(name, errorList){
+                            $("#id_"+name).next().text(errorList[0])
+                        })
+                    }
+                }
+            })                                  
+
+        })
+
+    }
+
+</script>
+
+{% endblock js%}

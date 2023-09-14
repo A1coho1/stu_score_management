@@ -1,0 +1,198 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+成绩列表
+{% endblock title %}
+
+{% block content %}
+<!-- 模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">添加成绩信息</h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>课程号</label>
+                        <div class="list-group-item disabled" id="number">暂无</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <div class="list-group-item disabled" id="name">暂无</div>
+                    </div>
+
+                <form id="formAdd">
+                    <div class="clearfix">
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label>{{field.label}}</label>
+                                {{field}}
+                                <span class="error-msg" style="color: red;"></span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  id="btnBack" class="btn btn-default" data-dismiss="modal">返 回</button>
+                <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div style="margin-bottom: 10px" class="clearfix">
+        <a>
+            <input type="button" value="添加成绩" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+        </a>
+
+            <div style="float: right;width: 300px; margin: 5px">
+                <form method="get">
+                    <div class="input-group">
+                        <input type="text" name="course" class="form-control" placeholder="按课程名称/课程号查询">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+            </div>
+
+            <div style="float: right;width: 300px; margin: 5px">
+                    <div class="input-group">
+                        <input type="text" name="student" class="form-control" placeholder="按姓名/学号查询">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+
+    </div>
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+            成绩列表
+        </div>
+
+        <!-- Table -->
+        <table class="table table-hover">
+            <thead>
+            <tr class="warning">
+                <th>学号</th>
+                <th>姓名</th>
+                <th>课程号</th>
+                <th>课程名称</th>
+                <th>日期</th>
+                <th>成绩</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.gid}}</th>
+                <th>{{ obj.s_name}}</th>
+                <th>{{ obj.number}}</th>
+                <th>{{ obj.c_name}}</th>
+                <td  style="font-weight : bold">{{ obj.date}}</td>
+                <td  style="font-weight : bold">{{ obj.score}}</td>
+                <td>
+                    <a class="btn btn-success btn-xs" href="/grade/{{ obj.id }}/edit">
+                        编辑
+                    </a>
+                    <a class="btn btn-danger btn-xs" href="/grade/{{ obj.id }}/delete">
+                        删除
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+    $(function(){
+        bindBtnSaveEvent();
+        bindQueryEvent();
+        bindBtnBack();
+    })
+
+    //ajax提交表单
+    function bindBtnSaveEvent(){
+        $("#btnSave").click(function(){
+
+            $(".error-msg").empty();
+
+            $.ajax({
+                url:"/grade/add",
+                type:"post",
+                data:$("#formAdd").serialize(),
+                dataType:"JSON",
+                success:function(res){
+                    if(res.status){
+                        alert("添加成功")
+                    }
+                    else{
+                        //显示错误信息
+                        // console.log(res.error)
+                        $.each(res.error, function(name, errorList){
+                            $("#id_"+name).next().text(errorList[0])
+                        })
+                    }
+                }
+            })                                  
+
+        })
+
+    }
+
+    //将所选内容发回后台并获取对应内容显示在前端页面
+    function bindQueryEvent(){
+        $(".modal-body .clearfix .form-group").click(function(){
+            $.ajax({
+                url:"/grade/info",
+                type:"get",
+                data:$("#formAdd").serialize(),
+                dataType:"JSON",
+                success:function(res){
+                    $("#number").text(res.number);
+                    $("#name").text(res.name);
+                }
+            })
+        })
+    }
+
+    //返回并刷新页面
+    function bindBtnBack(){
+        $("#btnBack").click(function(){
+            location.reload(bForceGet=true);
+        })
+    }
+
+    // $(".modal-body .clearfix .form-group").click(function(){
+    //     var value = $(this).val();
+    //     console.log(value);
+    // })
+
+
+</script>
+{% endblock js %}
+

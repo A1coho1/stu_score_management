@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.css' %}">
+    <style>
+        .navbar{
+            border-radius: 0;
+        }
+    </style>
+    {% block css %}{% endblock %}
+</head>
+
+
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/student/list">成绩管理系统</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/student/list">学生信息模块</a></li>
+                    <li><a href="/course/list">课程信息模块</a></li>
+                    <li><a href="/grade/list">成绩信息模块</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">统计分析模块<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href="/statistic/person">学生个人成绩单</a></li>
+
+                            <li><a href="/statistic/course">课程成绩统计分析</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" id="txt" class="navbar-brand">(╯°Д°)╯︵ ┻━┻(掀!桌!子!)</a></li>
+                    <!-- <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Dropdown <span class="care t"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">注销</a></li>
+                        </ul>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div>
+        {% block content %}{% endblock %}
+    </div>
+    <script src="{% static 'js/jquery-3.6.0.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.js' %}"></script>
+    {% block js %}{% endblock %}
+
+    <script type="text/javascript">
+    function show(){
+        var tag = document.getElementById("txt");
+        var dataString1 = "(╯°Д°)╯︵ ┻━┻(掀!桌!子!)"
+        var dataString2 = "┬─┬ ノ('-'ノ) （摆好摆好)"
+        var dataString3 = "(╯°Д°)╯︵ ┻━┻(又掀!桌!子!)"
+        var dataString4 = "┬─┬ ノ('-'ノ) (又摆好摆好)"
+        if(tag.innerText == dataString1) tag.innerText = dataString2;
+        else if (tag.innerText == dataString2) tag.innerText = dataString3;
+        else if (tag.innerText == dataString3) tag.innerText = dataString4;
+        else if (tag.innerText == dataString4) tag.innerText = dataString1;
+    }
+        setInterval(show,2500);
+    </script>
+</body>
+</html>
