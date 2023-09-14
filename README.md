@@ -4,6 +4,10 @@
 基于mysql+django的学生成绩管理系统，主要涉及学生信息管理、课程信息管理、成绩信息管理以及统计分析四个模块。
 其中学生、课程、成绩三大模块均实现了增删改查功能，统计分析部分使用 [echarts](https://echarts.apache.org/zh/index.html) 进行可视化。
 
+![personal](images/personal.png)
+
+![course](images/course.png)
+
 ## 2. 涉及的主要技术栈
 - 前端: Bootstrap+Jquery+AJAX
 - 后端: Django
