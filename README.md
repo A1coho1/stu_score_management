@@ -15,7 +15,7 @@
 ```
 pip install -r requirements.txt
 ```
-- 进入/Project/settings.py修改数据库相关设置:
+- 进入/stu_score_management/settings.py修改数据库相关设置:
 ```
 DATABASES = {
     'default': {
